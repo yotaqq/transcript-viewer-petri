@@ -151,21 +151,19 @@
 <div class="container mx-auto p-4 space-y-6">
 	<!-- Breadcrumbs (when viewing subdirectory) -->
 	{#if breadcrumbSegments.length > 0}
-		<div class="breadcrumbs text-sm">
+		<div class="breadcrumbs text-sm animate-slide-in-down">
 			<ul>
-				<li><a href="/" class="font-mono text-xs">Home</a></li>
+				<li><a href="/" class="font-mono text-xs transition-colors hover:text-primary">Home</a></li>
 				{#each breadcrumbSegments as segment, index}
 					<li>
 						{#if index === breadcrumbSegments.length - 1}
-							<!-- Current directory - not clickable -->
-							<span class="font-mono text-xs font-semibold">
+							<span class="font-mono text-xs font-semibold text-primary">
 								{segment.name}
 							</span>
 						{:else}
-							<!-- Parent directory - clickable -->
-							<a 
-								href="/?path={encodeURIComponent(segment.path)}" 
-								class="font-mono text-xs transition-colors"
+							<a
+								href="/?path={encodeURIComponent(segment.path)}"
+								class="font-mono text-xs transition-colors hover:text-primary"
 								title="Navigate to {segment.path}"
 							>
 								{segment.name}
@@ -177,41 +175,57 @@
 		</div>
 	{/if}
 
-	<!-- Header -->
-	<div class="flex justify-between items-center">
-		<div>
-			<h1 class="text-3xl font-bold">Petri Transcript Viewer</h1>
-			{#if currentPath}
-				<p class="text-sm text-base-content/70 mt-1">Viewing: {currentPath}</p>
-			{/if}
-		</div>
-		<div class="flex items-center gap-4">
-			<!-- View Mode Toggle -->
-			<ViewModeToggle />
-			
-			<div class="badge badge-neutral">
-				{#if dataLoader.loading}
-					Loading...
-				{:else if dataLoader.error}
-					Error
-				{:else}
-					{filteredTranscriptCount} / {totalTranscriptCount} transcripts
-				{/if}
+	<!-- Header Section -->
+	<div class="animate-slide-in-down">
+		<div class="bg-gradient-to-r from-base-100 to-base-200 dark:from-base-100 dark:to-base-200 rounded-xl p-6 card-enhanced">
+			<div class="flex justify-between items-start gap-4">
+				<div>
+					<h1 class="text-4xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent mb-2">
+						Petri Transcript Viewer
+					</h1>
+					{#if currentPath}
+						<p class="text-sm text-base-content/70 mt-2 font-mono">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 inline mr-1">
+								<path fill-rule="evenodd" d="M9.315 7.584a3 3 0 0 1 5.37 0 3 3 0 0 1 3.84 3.915c-.08.583-.324 1.14-.765 1.591a2.25 2.25 0 0 1-1.591.765h7.5a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V9a3 3 0 0 0-3-3H6.75a.75.75 0 0 0 0 1.5h2.565Z" clip-rule="evenodd" />
+							</svg>
+							{currentPath}
+						</p>
+					{/if}
+				</div>
+				<div class="flex items-center gap-4">
+					<!-- View Mode Toggle -->
+					<ViewModeToggle />
+
+					<div class="badge badge-lg badge-outline gap-2 transition-all hover:scale-105">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+							<path fill-rule="evenodd" d="M2.25 6a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V6Zm2 10.5a.75.75 0 0 0-.75.75v2.25c0 .414.336.75.75.75H21a.75.75 0 0 0 .75-.75v-2.25a.75.75 0 0 0-.75-.75H4.25Z" clip-rule="evenodd" />
+						</svg>
+						{#if dataLoader.loading}
+							<span class="animate-pulse">Loading...</span>
+						{:else if dataLoader.error}
+							Error
+						{:else}
+							{filteredTranscriptCount} / {totalTranscriptCount}
+						{/if}
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- Filters -->
-	<FilterControls 
-		{scoreTypes} 
-		filteredCount={filteredTranscriptCount} 
-		totalCount={totalTranscriptCount} 
-	/>
+	<div class="animate-slide-in-up">
+		<FilterControls
+			{scoreTypes}
+			filteredCount={filteredTranscriptCount}
+			totalCount={totalTranscriptCount}
+		/>
+	</div>
 
 	<!-- Loading Errors Display -->
 	{#if dataLoader.loadingErrors && dataLoader.loadingErrors.length > 0}
-		<div class="mb-6">
-			<ErrorDisplay 
+		<div class="mb-6 animate-fade-in">
+			<ErrorDisplay
 				errors={dataLoader.loadingErrors}
 				title="File Loading Errors"
 				showDetails={false}
@@ -221,33 +235,47 @@
 
 	<!-- Content Area -->
 	{#if dataLoader.loading && dataLoader.transcripts.length === 0}
-		<div class="text-center py-12">
-			<div class="loading loading-spinner loading-lg"></div>
-			<p class="mt-4 text-base-content/70">Loading {viewSettings.value.viewMode === 'list' ? 'transcripts' : 'folder tree'}...</p>
+		<div class="text-center py-20 animate-fade-in">
+			<div class="flex justify-center mb-6">
+				<div class="relative w-16 h-16">
+					<div class="absolute inset-0 rounded-full bg-primary/20 animate-pulse"></div>
+					<div class="absolute inset-2 rounded-full bg-primary/10 animate-pulse" style="animation-delay: 100ms;"></div>
+					<div class="absolute inset-4 rounded-full bg-primary/5 animate-pulse" style="animation-delay: 200ms;"></div>
+				</div>
+			</div>
+			<p class="text-lg font-semibold text-base-content mb-2">Loading {viewSettings.value.viewMode === 'list' ? 'transcripts' : 'folder tree'}...</p>
+			<p class="text-sm text-base-content/70">This may take a moment</p>
 		</div>
 	{:else if dataLoader.error}
-		<div class="text-center py-12">
-			<div class="text-error">
-				<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		<div class="text-center py-20 animate-fade-in">
+			<div class="inline-block text-error mb-6">
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.268 19.5c-.77.833.192 2.5 1.732 2.5z" />
 				</svg>
-				<p class="text-lg font-medium">Failed to load {viewSettings.value.viewMode === 'list' ? 'transcripts' : 'folder tree'}</p>
-				<p class="text-sm">{dataLoader.error}</p>
 			</div>
+			<p class="text-xl font-bold mb-2">Failed to load {viewSettings.value.viewMode === 'list' ? 'transcripts' : 'folder tree'}</p>
+			<p class="text-sm text-base-content/70 mb-6">{dataLoader.error}</p>
+			<a href="/" class="btn btn-primary gap-2">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+					<path fill-rule="evenodd" d="M9 3a1 1 0 0 1 1 1v6h6V4a1 1 0 0 1 2 0v6h3a1 1 0 0 1 0 2h-3v6a1 1 0 0 1-2 0v-6h-6v6a1 1 0 0 1-2 0v-6H2a1 1 0 0 1 0-2h3V4a1 1 0 0 1 1-1Z" clip-rule="evenodd" />
+				</svg>
+				Back to Home
+			</a>
 		</div>
 	{:else}
 		<!-- Unified Table View -->
-		<div class="card bg-base-100 shadow-sm">
+		<div class="card-enhanced bg-base-100 shadow-lg border border-base-300/20 animate-scale-in">
 			<div class="card-body">
-				<div class="flex justify-between items-center mb-4">
-					<h2 class="text-xl font-bold">
+				<div class="flex justify-between items-center mb-6">
+					<h2 class="text-2xl font-bold flex items-center gap-2">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-primary">
+							<path fill-rule="evenodd" d="M3 4.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3ZM3 9.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3ZM3 14.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3ZM3 19.25a.75.75 0 0 0 0 1.5h16.5a.75.75 0 0 0 0-1.5H3Z" clip-rule="evenodd" />
+						</svg>
 						{viewSettings.value.viewMode === 'tree' ? 'Folder Tree' : 'Transcript List'}
 					</h2>
-					
-					<!-- Progressive Loading Indicator removed (no streaming) -->
 				</div>
-				
-				<TranscriptTable 
+
+				<TranscriptTable
 					transcripts={filteredTranscripts}
 					folderTree={filteredFolderTree}
 					{scoreTypes}

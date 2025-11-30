@@ -225,8 +225,8 @@
 </script>
 
 <!-- Message Card Container -->
-<div 
-  class={`border rounded-lg bg-base-100 ${leftEdgeClassForAssistant(message)} ${message.isShared ? 'border-dashed' : ''} ${!isVisible ? 'invisible pointer-events-none' : ''}`}
+<div
+  class={`message-card-base border rounded-lg bg-base-100 shadow-sm transition-smooth ${leftEdgeClassForAssistant(message)} ${message.isShared ? 'border-dashed opacity-75' : 'border-base-300/30'} ${!isVisible ? 'invisible pointer-events-none' : ''}`}
   data-message-id={message.id}
   style={message.isShared ? 'margin-bottom: 0.5rem;' : ''}
 >
@@ -238,11 +238,12 @@
 
 <!-- Message Header Snippet -->
 {#snippet messageHeader()}
-  <div class="w-full rounded-t-lg"><div
+  <div class="w-full rounded-t-lg">
+    <div
       role="button"
       tabindex="0"
       aria-expanded={isOpen}
-      class="w-full p-2 flex items-center justify-between hover:bg-black/5 dark:hover:bg-white/5 rounded-t-lg"
+      class="message-header w-full p-3 flex items-center justify-between hover:bg-base-300/20 dark:hover:bg-white/5 rounded-t-lg cursor-pointer transition-smooth"
       onclick={() => onToggle(message.id || '')}
       onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(message.id || ''); } }}
     >
@@ -251,43 +252,40 @@
         {@render expandButton()}
         {@render copyMenu()}
       </div>
-    </div></div>
+    </div>
+  </div>
 {/snippet}
 
 <!-- Header Badges Snippet -->
 {#snippet headerBadges()}
   {@const messageName = getMessageSourceLabel(message)}
-  <div class="flex items-center gap-2">
-    <!-- <span class="badge {getMessageTypeBadgeColor(message.type)} badge-sm font-mono"> -->
-     <span class="badge badge-outline badge-xs font-mono">
+  <div class="flex items-center gap-2 flex-wrap">
+    <span class="badge badge-animated badge-outline badge-xs font-mono text-xs">
       {message.type.toUpperCase()}
     </span>
-    <span class="badge badge-outline badge-xs">
-      Message {messageIndex + 1}
+    <span class="badge badge-animated badge-outline badge-xs text-xs">
+      #{messageIndex + 1}
     </span>
     {#if messageName}
-      <span class="badge {hashStringToColor(messageName)} badge-sm">{messageName.toUpperCase()}</span>
+      <span class="badge badge-animated {hashStringToColor(messageName)} badge-sm font-bold text-xs">{messageName.toUpperCase()}</span>
     {/if}
     {#if message.type === 'tool'}
       {#if message.function}
-        <span class="text-xs font-mono">{message.function}</span>
+        <span class="text-xs font-mono bg-base-200/50 px-2 py-1 rounded transition-smooth">{message.function}</span>
       {/if}
       {#if message.error}
-        <span class="badge badge-error badge-xs">ERROR</span>
+        <span class="badge badge-error badge-xs animate-pulse-glow">ERROR</span>
       {/if}
     {/if}
-    <!-- {#if message.isShared}
-      <span class="badge badge-neutral badge-xs">SHARED</span>
-    {/if} -->
   </div>
 {/snippet}
 
 <!-- Expand Button Snippet -->
 {#snippet expandButton()}
-  <svg 
-    class="w-4 h-4 transition-transform {isOpen ? '' : 'rotate-180'}"
-    fill="none" 
-    stroke="currentColor" 
+  <svg
+    class="w-4 h-4 transition-smooth {isOpen ? 'rotate-0' : '-rotate-90'} text-base-content/60"
+    fill="none"
+    stroke="currentColor"
     viewBox="0 0 24 24"
   >
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -297,51 +295,51 @@
 <!-- Message Menu Snippet -->
 {#snippet copyMenu()}
   <div class="dropdown dropdown-end ml-2" tabindex="0" onkeydown={(e)=>{ if(e.key==='Escape'){ (e.currentTarget as HTMLElement).blur?.(); } }} onclick={(e) => e.stopPropagation()} role="menu" aria-label="Message actions">
-    <button type="button" class="btn btn-ghost btn-xs btn-square" aria-label="Message menu">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
+    <button type="button" class="btn btn-ghost btn-xs btn-square transition-smooth hover:bg-base-200" aria-label="Message menu">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
+        <path d="M12 8.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Zm0 5.25a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Zm0 5.25a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
       </svg>
     </button>
-    <ul class="dropdown-content menu bg-base-100 rounded-box z-[1] w-64 p-2 shadow-lg border border-base-300">
+    <ul class="dropdown-content menu bg-base-100 rounded-lg z-[1] w-64 p-2 shadow-xl border border-base-300/30 animate-slide-down">
       <li>
-        <button onclick={(e) => { e.stopPropagation(); toggleRawJsonView(); }} class="text-left">
+        <button onclick={(e) => { e.stopPropagation(); toggleRawJsonView(); }} class="text-left transition-smooth hover:bg-base-200/50">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
           </svg>
-          {showRawJson ? 'Show rendered view' : 'Show raw JSON'}
+          <span>{showRawJson ? 'Rendered' : 'Raw JSON'}</span>
         </button>
       </li>
       <div class="divider my-1"></div>
       <li>
-        <button onclick={() => onCopy({ type: 'history', columnIndex, messageIndex })} class="text-left">
+        <button onclick={() => onCopy({ type: 'history', columnIndex, messageIndex })} class="text-left transition-smooth hover:bg-base-200/50">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75A1.125 1.125 0 0 1 3.75 20.625V9.375c0-.621.504-1.125 1.125-1.125H7.5a9.75 9.75 0 0 1 1.5.124m5.25 10.501v-3.375c0-.621.504-1.125 1.125-1.125h3.375c.621 0 1.125.504 1.125 1.125v3.375c0 .621-.504 1.125-1.125 1.125h-3.375A1.125 1.125 0 0 1 15.75 17.25Z" />
           </svg>
-          Copy history up to here ({messageIndex + 1} messages)
+          <span>History ({messageIndex + 1})</span>
         </button>
       </li>
       <li>
-        <button onclick={() => onCopy({ type: 'events', columnIndex, messageIndex })} class="text-left">
+        <button onclick={() => onCopy({ type: 'events', columnIndex, messageIndex })} class="text-left transition-smooth hover:bg-base-200/50">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 0 1 0 3.75H5.625a1.875 1.875 0 0 1 0-3.75Z" />
           </svg>
-          Copy events up to here
+          <span>Events</span>
         </button>
       </li>
       <li>
-        <button onclick={() => onCopy({ type: 'single', message })} class="text-left">
+        <button onclick={() => onCopy({ type: 'single', message })} class="text-left transition-smooth hover:bg-base-200/50">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.124-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z" />
           </svg>
-          Copy this message only
+          <span>This Message</span>
         </button>
       </li>
       <li>
-        <button onclick={() => onCopy({ type: 'tools', columnIndex, messageIndex })} class="text-left">
+        <button onclick={() => onCopy({ type: 'tools', columnIndex, messageIndex })} class="text-left transition-smooth hover:bg-base-200/50">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z" />
           </svg>
-          Copy tools created up to here
+          <span>Tools</span>
         </button>
       </li>
     </ul>
@@ -350,13 +348,13 @@
 
 <!-- Message Content Snippet -->
 {#snippet messageContent()}
-  <div class="px-3 pb-3 border-t border-base-300 dark:border-white/10">
+  <div class="px-4 py-3 border-t border-base-300/30 dark:border-white/10 bg-base-50 dark:bg-base-900/20 expand-transition expanded">
     {#if showRawJson}
-      <div class="mt-2">
+      <div class="mt-2 animate-fade-in">
         <JsonViewer value={message} theme={$themeString} />
       </div>
     {:else}
-      <div class="text-sm leading-relaxed mt-2 message-content text-gray-900 dark:text-gray-100 overflow-x-auto">
+      <div class="text-sm leading-relaxed mt-2 message-content text-gray-900 dark:text-gray-100 overflow-x-auto animate-fade-in">
         {#if message.type === 'system'}
           {@render systemMessage(message)}
         {:else if message.type === 'user'}
@@ -469,46 +467,44 @@
 
 <!-- Tool Calls Snippet -->
 {#snippet toolCalls(toolCallsList: ToolCall[])}
-  <div class="mt-3">
+  <div class="mt-4 space-y-2">
     {#each toolCallsList as toolCall, i}
       {@const tcId = toolCall.id || String(i)}
-      {#if i > 0}
-        <div class="my-2 border-t border-dashed border-base-300 dark:border-white/20"></div>
-      {/if}
-      <div class="grid grid-cols-[16px_1fr] gap-x-2 items-start">
-        <div class="flex items-center justify-center">
-          <button
-            type="button"
-            class="p-0.5 rounded hover:bg-black/5 dark:hover:bg-white/5"
-            aria-label="Toggle tool call"
-            aria-expanded={!isToolCallCollapsed(tcId)}
-            aria-controls={`toolcall-${tcId}`}
-            onclick={(e) => { e.stopPropagation(); toggleToolCallCollapsed(tcId); }}
-            onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); toggleToolCallCollapsed(tcId); } }}
-          >
-            <svg class="w-3 h-3 transition-transform {isToolCallCollapsed(tcId) ? '-rotate-90' : 'rotate-0'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-        </div>
-        <div class="text-xs mb-1 flex items-center overflow-x-auto">
-          <span class="badge badge-info badge-xs mr-1 flex-shrink-0">TOOL</span>
-          <span class="font-mono flex-shrink-0">{toolCall.function}</span>
-          <span class="text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">ID: {toolCall.id}</span>
+      <div class="bg-base-200/30 rounded-lg border border-base-300/30 p-2 transition-smooth hover:bg-base-200/50 animate-slide-in-up">
+        <div class="grid grid-cols-[20px_1fr] gap-x-2 items-start">
+          <div class="flex items-center justify-center mt-1">
+            <button
+              type="button"
+              class="p-0.5 rounded transition-smooth hover:bg-base-300"
+              aria-label="Toggle tool call"
+              aria-expanded={!isToolCallCollapsed(tcId)}
+              aria-controls={`toolcall-${tcId}`}
+              onclick={(e) => { e.stopPropagation(); toggleToolCallCollapsed(tcId); }}
+              onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); toggleToolCallCollapsed(tcId); } }}
+            >
+              <svg class="w-3.5 h-3.5 transition-smooth {isToolCallCollapsed(tcId) ? '-rotate-90' : 'rotate-0'} text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+          </div>
+          <div class="text-xs mb-1 flex items-center overflow-x-auto gap-2">
+            <span class="badge badge-info badge-xs flex-shrink-0 font-bold">TOOL</span>
+            <span class="font-mono flex-shrink-0 text-primary font-semibold">{toolCall.function}</span>
+            <span class="text-gray-500 dark:text-gray-400 flex-shrink-0 text-xs">ID: {toolCall.id}</span>
+          </div>
         </div>
         {#if !isToolCallCollapsed(tcId)}
-          <div class="col-start-1 self-stretch justify-self-center">
-            <div class="h-full w-px bg-base-300 dark:bg-white/20 mt-[2px] mx-auto"></div>
-          </div>
-          {#if toolCall.view}
-            {#if toolCall.view.format === 'markdown'}
-              <div id={`toolcall-${tcId}`} class="prose max-w-none text-sm [font-size-adjust:from-font] prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-headings:my-1 prose-blockquote:my-0 prose-pre:my-0 prose-pre:p-0 prose-code:my-0 prose-pre:bg-transparent prose-code:bg-transparent prose-pre:text-inherit prose-code:text-inherit prose-pre:leading-snug prose-pre:whitespace-pre-wrap prose-code:whitespace-pre-wrap prose-pre:break-words prose-code:break-words prose-table:text-xs overflow-x-auto">{@html renderMarkdown(toolCall.view.content)}</div>
-            {:else}
-              <div id={`toolcall-${tcId}`} class="whitespace-pre-wrap leading-snug font-mono text-[0.9em] overflow-x-auto">{toolCall.view.content}</div>
+          <div class="col-start-2 mt-2 animate-fade-in">
+            {#if toolCall.view}
+              {#if toolCall.view.format === 'markdown'}
+                <div id={`toolcall-${tcId}`} class="prose max-w-none text-sm [font-size-adjust:from-font] prose-p:my-0 prose-ul:my-0 prose-ol:my-0 prose-headings:my-1 prose-blockquote:my-0 prose-pre:my-0 prose-pre:p-0 prose-code:my-0 prose-pre:bg-transparent prose-code:bg-transparent prose-pre:text-inherit prose-code:text-inherit prose-pre:leading-snug prose-pre:whitespace-pre-wrap prose-code:whitespace-pre-wrap prose-pre:break-words prose-code:break-words prose-table:text-xs overflow-x-auto bg-base-100/50 p-2 rounded">{@html renderMarkdown(toolCall.view.content)}</div>
+              {:else}
+                <div id={`toolcall-${tcId}`} class="whitespace-pre-wrap leading-snug font-mono text-[0.9em] overflow-x-auto bg-base-100/50 p-2 rounded text-xs">{toolCall.view.content}</div>
+              {/if}
+            {:else if toolCall.arguments && Object.keys(toolCall.arguments || {}).length > 0}
+              <div id={`toolcall-${tcId}`} class="whitespace-pre-wrap leading-snug font-mono text-[0.9em] overflow-x-auto bg-base-100/50 p-2 rounded text-xs">{toYaml(toolCall.arguments)}</div>
             {/if}
-          {:else if toolCall.arguments && Object.keys(toolCall.arguments || {}).length > 0}
-            <div id={`toolcall-${tcId}`} class="whitespace-pre-wrap leading-snug font-mono text-[0.9em] overflow-x-auto">{toYaml(toolCall.arguments)}</div>
-          {/if}
+          </div>
         {/if}
       </div>
     {/each}
